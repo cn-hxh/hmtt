@@ -69,6 +69,7 @@
 
 <script>
 import { loginAPI } from '@/api'
+// Notify 是一个函数，不是一个组件
 import { Notify } from 'vant'
 import { setToken } from '@/utils/token'
 
@@ -99,6 +100,10 @@ export default {
           message: '登录成功'
         })
         setToken(res.data.data.token)
+        // 跳转一定要写在最后 -> 尽量到最后执行
+        this.$router.replace({
+          path: '/layout/home'
+        })
       } catch (error) {
         Notify({
           type: 'danger',
