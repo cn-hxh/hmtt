@@ -13,13 +13,18 @@
           所以标签没有高度，组件判定触底了，组件的 load 事件就触发了（简单理解就是，van-list 的 load 事件一上来就执行了一次）
           解决方法：1. 关闭默认判定（给 List 组件传递一个 immediate-check 属性，属性值为 false）  2. 删除 created
           1 号方法有一个缺陷，因为如果你已经下滑并触发过了一次 load 事件。那么 List 组件切换的时候，不管你身上有没有 immediate-check
-            它都会触发一次 load 事件，所以还是采用 2 号方法
+            它都会触发一次 load 事件，因为 immediate-check 只是内部不要进行判断而已，但监听滚动事件的代码还在，
+            第一个频道滚动到底部，再切换第二个频道的时候（新建 - 内容没有那么高），滚动会从底部滚动回到顶部，
+            这个时候发生了滚动，所以滚动事件还是触发了，immediate-check 的作用就没了
           1 号方法的语法：<van-list :immediate-check="false"></van-list>
       -->
         <ArticleItem
           v-for="article in articleList"
           :key="article.art_id"
           :artObj="article"
+          @dislikeEV="dislikeFn"
+          @reportEV="reportFn"
+          @click.native="itemClickFn(article.art_id)"
         ></ArticleItem>
       </van-list>
     </van-pull-refresh>
@@ -27,8 +32,9 @@
 </template>
 
 <script>
-import ArticleItem from '@/views/Home/components/ArticleItem'
-import { getAllArticleListAPI } from '@/api'
+import ArticleItem from '@/components/ArticleItem.vue'
+import { getAllArticleListAPI, dislikeArticleAPI, reportArticleAPI } from '@/api'
+import Notify from '@/ui/Notify.js'
 
 export default {
   name: 'ArticleList',
@@ -106,6 +112,31 @@ export default {
       this.theTime = new Date().getTime()
 
       this.getArticleListFn()
+    },
+    // 反馈-不感兴趣
+    async dislikeFn (artId) {
+      await dislikeArticleAPI(artId)
+      Notify({
+        type: 'success',
+        message: '反馈成功'
+      })
+    },
+    // 反馈-反馈垃圾内容
+    async reportFn (artId, type) {
+      await reportArticleAPI(artId, type)
+      Notify({
+        type: 'success',
+        message: '举报成功'
+      })
+    },
+    // 每个文章单元格的点击事件
+    itemClickFn (art_id) {
+      this.$router.push({
+        path: '/detail',
+        query: {
+          art_id
+        }
+      })
     }
   }
 }

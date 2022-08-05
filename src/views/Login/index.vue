@@ -69,16 +69,16 @@
 
 <script>
 import { loginAPI } from '@/api'
-// Notify 是一个函数，不是一个组件
-import { Notify } from 'vant'
+import Notify from '@/ui/Notify.js'
 import { setToken } from '@/utils/token'
+import { setStorage } from '@/utils/storage.js'
 
 export default {
   name: 'Login',
   data () {
     return {
       user: {
-        mobile: '13888888888', // 手机号
+        mobile: '13888888135', // 手机号
         code: '246810' // 验证码（密码-必须是 246810 后台规定死的，无论手机号是什么）
       },
       isLoading: false // 登录按钮的加载状态
@@ -100,9 +100,10 @@ export default {
           message: '登录成功'
         })
         setToken(res.data.data.token)
+        setStorage('refresh_token', res.data.data.refresh_token)
         // 跳转一定要写在最后 -> 尽量到最后执行
         this.$router.replace({
-          path: '/layout/home'
+          path: this.$route.query.path || '/layout/home'
         })
       } catch (error) {
         Notify({

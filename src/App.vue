@@ -1,20 +1,15 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <keep-alive :exclude="['Search', 'Login', 'ArticleDetail', 'SearchResult']">
+      <!-- exclude 用来标记那些不需要缓存的组件，标记项为组件的 name 属性值 -->
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script>
-import { getAllChannelsAPI } from '@/api'
 export default {
-  async created () {
-    try {
-      const res = await getAllChannelsAPI()
-      console.log(res)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  name: 'App'
 }
 </script>
 

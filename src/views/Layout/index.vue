@@ -1,7 +1,9 @@
 <template>
   <div class="layout">
     <div class="home-container">
-      <router-view></router-view>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </div>
     <div>
       <van-tabbar v-model="active" route>
